@@ -24,6 +24,7 @@ SOFTWARE.
  */
 package textureremixsimple;
 
+import org.apache.commons.io.FilenameUtils;
 import java.io.*;
 import javax.imageio.*;
 import java.awt.*;
@@ -55,9 +56,16 @@ public class MyImage {
     boolean invertAlpha;
     BufferedImage image;
     pixel[][] pix;
+    String fileName;
 
-    public MyImage(int num) {
-        id = num;
+    public MyImage() {
+    }
+    
+    MyImage UnsetImage(int num, String fileName) {
+        MyImage img = new MyImage();
+        img.id = num;
+        img.fileName = fileName;
+        return img;
     }
 
     public MyImage(int num, String file) {
@@ -67,7 +75,10 @@ public class MyImage {
     
     final void loadImageData(String file){
         try {
-            image = ImageIO.read(new File(file));
+            File f = new File(file);
+            fileName = FilenameUtils.removeExtension(f.getName());
+            System.out.println("fileName: " + fileName);
+            image = ImageIO.read(f);
             loadPixels();
             System.out.println("Successfully loaded input file #"+id+": "+file);
         } catch (Exception e) {
@@ -367,7 +378,7 @@ public class MyImage {
             return;
         }
         applyPixels();
-        File outputfile = new File(savepath+File.separator+"texture"+id+".png");
+        File outputfile = new File(savepath+File.separator+fileName+".png");
         try {
             ImageIO.write(image, "png", outputfile);
         } catch (Exception e) {
@@ -381,7 +392,7 @@ public class MyImage {
             return;
         }
         applyPixels();
-        File outputfile = new File(savepath+File.separator+"texture"+id+append+".png");
+        File outputfile = new File(savepath+File.separator+fileName+append+".png");
         try {
             ImageIO.write(image, "png", outputfile);
         } catch (Exception e) {
@@ -390,10 +401,10 @@ public class MyImage {
     }
     
     void splitImage() {
-        MyImage r = new MyImage(id);
-        MyImage g = new MyImage(id);
-        MyImage b = new MyImage(id);
-        MyImage a = new MyImage(id);
+        MyImage r = UnsetImage(id, fileName);
+        MyImage g = UnsetImage(id, fileName);
+        MyImage b = UnsetImage(id, fileName);
+        MyImage a = UnsetImage(id, fileName);
         r.blank(getWidth(), getHeight());
         g.blank(getWidth(), getHeight());
         b.blank(getWidth(), getHeight());
@@ -413,8 +424,8 @@ public class MyImage {
     }
     
     void splitAlpha() {
-        MyImage r = new MyImage(id);
-        MyImage a = new MyImage(id);
+        MyImage r = UnsetImage(id, fileName);
+        MyImage a = UnsetImage(id, fileName);
         r.blank(getWidth(), getHeight());
         a.blank(getWidth(), getHeight());
         for (int row = 0; row < getHeight(); row++) {
@@ -431,8 +442,8 @@ public class MyImage {
     }
     
     void splitAlphaHalf() {
-        MyImage a = new MyImage(id);
-        MyImage b = new MyImage(id);
+        MyImage a = UnsetImage(id, fileName);
+        MyImage b = UnsetImage(id, fileName);
         a.blank(getWidth(), getHeight());
         b.blank(getWidth(), getHeight());
         for (int row = 0; row < getHeight(); row++) {
@@ -455,7 +466,7 @@ public class MyImage {
                 }
             }
         }
-        a.saveFile("_a1");
-        b.saveFile("_a2");
+        a.saveFile("_ah1");
+        b.saveFile("_ah2");
     }
 }
